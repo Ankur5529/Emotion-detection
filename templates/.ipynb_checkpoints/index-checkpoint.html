@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Emotion Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+    <h1>Real-Time Emotion Detector</h1>
+    <div class="camera">
+        <!-- Webcam feed -->
+        <img src="{{ url_for('video') }}" alt="Webcam Feed">
+    </div>
+    <p class="footer">Press Ctrl+C in terminal to stop the server</p>
+</body>
+</html>

@@ -1,0 +1,25 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.camera img {
+    border: 3px solid #333;
+    border-radius: 10px;
+    width: 640px;
+    height: 480px;
+}
+
+.footer {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #555;
+}
