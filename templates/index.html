@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Emotion Detector</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detector - AI Powered</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- Placeholder for icons -->
 </head>
+
 <body>
-    <h1>Real-Time Emotion Detector</h1>
-    <div class="camera">
-        <!-- Webcam feed -->
-        <img src="{{ url_for('video') }}" alt="Webcam Feed">
+
+    <div class="container">
+        <!-- Video Card -->
+        <div class="video-card">
+            <h2>
+                <span class="live-indicator"></span> Live Feed
+            </h2>
+            <div class="video-container">
+                <img src="{{ url_for('video') }}" alt="Webcam Feed" class="video-feed" id="videoStream">
+            </div>
+            <p style="margin-top: 15px; color: #aaa;">Scanning your face...</p>
+        </div>
+
+        <!-- Emotion Stats Card -->
+        <div class="stats-card">
+            <h3>Emotion Analysis</h3>
+
+            <div class="current-emotion">
+                <h4>Currently Detecting:</h4>
+                <div class="emotion-text" id="currentEmotion">Neutral</div>
+            </div>
+
+            <!-- Emotion Bars -->
+            <div id="statsContainer">
+                <!-- Example Bars (will be updated by JS) -->
+                <div class="emotion-bar">
+                    <span class="emotion-label">Happy</span>
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+                <!-- ... other emotions ... -->
+            </div>
+        </div>
     </div>
-    <p class="footer">Press Ctrl+C in terminal to stop the server</p>
+
+    <!-- Script for Live Updates -->
+    <script>
+        // Update function to fetch emotion data
+        function updateStats() {
+            fetch('/emotion_data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.emotion) {
+                        document.getElementById('currentEmotion').innerText = data.emotion;
+                        // Assuming data.probabilities is a dictionary { 'Happy': 0.8, ... }
+                        // Update progress bars here if available
+                        updateBars(data.probabilities);
+                    }
+                })
+                .catch(error => console.error('Error fetching stats:', error));
+        }
+
+        function updateBars(probabilities) {
+            const container = document.getElementById('statsContainer');
+            container.innerHTML = ''; // Clear existing
+
+            // Define colors for emotions? Or use CSS classes.
+            for (const [emotion, score] of Object.entries(probabilities)) {
+                const percent = (score * 100).toFixed(1) + '%';
+
+                const barHtml = `
+                    <div class="emotion-bar" style="margin-bottom: 12px; display: flex; align-items: center;">
+                        <span class="emotion-label" style="width: 80px; text-align: right; margin-right: 10px;">${emotion}</span>
+                        <div class="progress-bar-bg" style="flex-grow: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px;">
+                            <div class="progress-fill" style="width: ${percent}; height: 100%; background: linear-gradient(90deg, #6C63FF, #00D2D3); border-radius: 4px; transition: width 0.5s ease;"></div>
+                        </div>
+                        <span style="margin-left: 10px; font-size: 0.8em; color: #888;">${Math.round(score * 100)}%</span>
+                    </div>
+                `;
+                container.innerHTML += barHtml;
+            }
+        }
+
+        // Poll every 500ms
+        setInterval(updateStats, 500);
+    </script>
 </body>
+
 </html>
