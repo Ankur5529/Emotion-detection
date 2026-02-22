@@ -22,6 +22,7 @@ try:
     model = load_model(MODEL_PATH)
 except:
     print("Warning: Could not load the preferred model. Make sure training is complete.")
+    model = None
 
 class_labels = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
 
@@ -67,16 +68,18 @@ def generate_frames():
                         roi = np.expand_dims(roi, axis=0)
                         roi = np.expand_dims(roi, axis=-1)
 
-                        prediction = model.predict(roi, verbose=0)[0]
-                        label_argmax = prediction.argmax()
-                        label = class_labels[label_argmax]
-                        
-                        # Update global state
-                        with data_lock:
-                            current_emotion_state = {
-                                'emotion': label,
-                                'probabilities': {class_labels[i]: float(prediction[i]) for i in range(len(class_labels))}
-                            }
+                        label = 'Neutral'
+                        if model is not None:
+                            prediction = model.predict(roi, verbose=0)[0]
+                            label_argmax = prediction.argmax()
+                            label = class_labels[label_argmax]
+                            
+                            # Update global state
+                            with data_lock:
+                                current_emotion_state = {
+                                    'emotion': label,
+                                    'probabilities': {class_labels[i]: float(prediction[i]) for i in range(len(class_labels))}
+                                }
                         
                         # Draw visual feedback on frame
                         color = (0, 255, 0) # Green for box
